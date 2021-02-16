@@ -40,7 +40,9 @@ class EventList extends Component {
       
     */
 
-    getEvents(); //.then((events) => this.setState({ events }));
+    this.props.navigation.addListener("focus", () => {
+      getEvents().then((events) => this.setState({ events }));
+    });
   }
 
   handleAddEvent = () => {

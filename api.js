@@ -1,23 +1,30 @@
 import moment from "moment";
-import Constants from "expo-constants";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import Constents from "expo-constants";
 
-const { manifest } = Constants;
+const { manifest } = Constents;
 const api = manifest.packagerOpts.dev
-  ? manifest.debuggerHost.split(":").shift().concat(":3000")
-  : "api.example.com";
+  ? manifest.debuggerHost.split(`:`).shift().concat(`:3000`)
+  : `api.example.com`;
 
 const url = `http://${api}/events`;
-
-console.log(url);
+// use json-server --host 192.168.43.161 db.json to run the server
 
 export function getEvents() {
-  return fetch(url)
-    .then((resp) => {
-      console.log(resp);
-      return resp;
-    })
-    .then((response) => response.json())
-    .then((events) => events.map((e) => ({ ...e, date: new Date(e.date) })))
+  return axios
+    .get(url)
+    .then((response) => response.data)
+    .then((events) =>
+      events.map((evt) => ({ ...evt, date: new Date(evt.date) }))
+    )
+    .catch((err) => console.log(err));
+}
+
+export function saveEvent({ title, date }) {
+  return axios
+    .post(url, { title, date, id: uuidv4() })
+    .then((res) => res)
     .catch((err) => console.log(err));
 }
 
